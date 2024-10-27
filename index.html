@@ -60,8 +60,9 @@
         }
 
         function updateClock() {
-            const epochTime = Math.floor(Date.now() / 1000);
-            drawClock(epochTime);
+            // Adjust time to local timezone
+            const localEpochTime = Math.floor((Date.now() + new Date().getTimezoneOffset() * -60 * 1000) / 1000);
+            drawClock(localEpochTime);
         }
 
         // Update the clock every second
