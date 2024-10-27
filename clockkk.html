@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Clock</title>
+</head>
+<body>
+    <canvas id="clockCanvas" width="400" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById("clockCanvas");
+        const ctx = canvas.getContext("2d");
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = 150;
+
+        function drawClock(epochTime) {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Get time positions
+            const seconds = epochTime % 60;
+            const minutes = Math.floor(epochTime / 60) % 60;
+            const hours = Math.floor(epochTime / 3600) % 12;
+
+            const secPosition = (Math.PI / 30) * seconds;  // Radians
+            const minPosition = (Math.PI / 30) * (minutes + seconds / 60.0);
+            const hrPosition = (Math.PI / 6) * (hours + minutes / 60.0);
+
+            // Draw clock frame (12 positions)
+            ctx.beginPath();
+            for (let i = 0; i < 12; i++) {
+                ctx.moveTo(centerX, centerY);
+                const angle = i * (Math.PI / 6);
+                ctx.lineTo(
+                    centerX + radius * Math.cos(angle),
+                    centerY + radius * Math.sin(angle)
+                );
+            }
+            ctx.stroke();
+
+            // Draw hands
+            drawHand(hrPosition, radius * 0.6, 6);  // Hour hand
+            drawHand(minPosition, radius * 0.75, 4);  // Minute hand
+            drawHand(secPosition, radius * 0.9, 2, "red");  // Second hand
+        }
+
+        function drawHand(position, length, width, color = "black") {
+            ctx.beginPath();
+            ctx.lineWidth = width;
+            ctx.strokeStyle = color;
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(
+                centerX + length * Math.cos(position - Math.PI / 2),
+                centerY + length * Math.sin(position - Math.PI / 2)
+            );
+            ctx.stroke();
+            ctx.strokeStyle = "black";  // Reset color to black
+        }
+
+        function updateClock() {
+            const epochTime = Math.floor(Date.now() / 1000);
+            drawClock(epochTime);
+        }
+
+        // Update the clock every second
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>
